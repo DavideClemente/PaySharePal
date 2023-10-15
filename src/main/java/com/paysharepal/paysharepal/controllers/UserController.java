@@ -1,14 +1,12 @@
 package com.paysharepal.paysharepal.controllers;
 
-import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserDto;
-import com.paysharepal.paysharepal.infrastructure.dto.responses.UserResource;
-import com.paysharepal.paysharepal.model.User;
-import com.paysharepal.paysharepal.services.UserService;
+import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserContract;
+import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
+import com.paysharepal.paysharepal.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,58 +15,57 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("Users")
 public class UserController {
+
+    private final IUserService userService;
     @Autowired
-    private UserService userService;
+    public UserController(IUserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<UserResource>>> GetAll() {
-        List<User> allUsers = userService.GetAll();
+    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> GetAll() {
+        List<UserDto> allUsers = userService.GetAll();
 
-        List<EntityModel<UserResource>> userResources = allUsers.stream().map(
+        List<EntityModel<UserDto>> userResources = allUsers.stream().map(
                 user -> {
-                    UserResource userResource = UserResource.of(user);
-                    userResource.addSelfLink(user.getId());
-                    userResource.addAllUsersLink();
-                    return EntityModel.of(userResource);
+                    user.AddSelfLink();
+                    return EntityModel.of(user);
                 }
         ).toList();
 
         Link allUsersLink = WebMvcLinkBuilder.linkTo(UserController.class).withSelfRel();
 
-        CollectionModel<EntityModel<UserResource>> response = CollectionModel.of(userResources, allUsersLink);
+        CollectionModel<EntityModel<UserDto>> response = CollectionModel.of(userResources, allUsersLink);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EntityModel<UserResource>> GetById(@PathVariable UUID id) {
-        Optional<User> userOpt = userService.Get(id);
+    public ResponseEntity<EntityModel<UserDto>> GetById(@PathVariable UUID id) {
+        Optional<UserDto> userResourceOptional = userService.Get(id);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            UserResource userResource = UserResource.of(user);
-            userResource.addSelfLink(id);
-            userResource.addAllUsersLink();
-            return ResponseEntity.ok(EntityModel.of(userResource));
+        if (userResourceOptional.isPresent()) {
+            UserDto userDto = userResourceOptional.get();
+            userDto.AddSelfLink();
+            userDto.AddAllUsersLink();
+            return ResponseEntity.ok(EntityModel.of(userDto));
         }
         return ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<UserResource>> Add(@RequestBody UserDto user) {
-        User newUser = userService.Add(user);
+    public ResponseEntity<EntityModel<UserDto>> Add(@RequestBody UserContract user) {
+        UserDto userDto = userService.Add(user);
 
-        UserResource userResource = UserResource.of(newUser);
-        userResource.addSelfLink(newUser.getId());
-        userResource.addAllUsersLink();
+        userDto.AddSelfLink();
+        userDto.AddAllUsersLink();
 
-        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash("users").slash(newUser.getId()).toUri();
+        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash("users").slash(userDto.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(userResource);
+        return ResponseEntity.created(uri).body(userDto);
     }
 }

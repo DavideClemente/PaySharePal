@@ -14,23 +14,21 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResource extends EntityModel<UserResource> {
+public class UserDto extends EntityModel<UserDto> {
     private UUID id;
     private String name;
+    private String email;
 
-    public void addSelfLink(UUID userId) {
-        add(Link.of("/users/"+userId).withSelfRel());
+    public void AddSelfLink() {
+        add(Link.of("/users/"+getId()).withSelfRel());
     }
 
-    public void addAllUsersLink() {
+    public void AddAllUsersLink() {
         String usersLink = "/users";
         add(Link.of(usersLink, "all-users"));
     }
 
-    public static UserResource of(@NotNull User user) {
-        UserResource resource = new UserResource();
-        resource.id = user.getId();
-        resource.name = user.getName();
-        return resource;
+    public static UserDto of(@NotNull User user) {
+        return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 }

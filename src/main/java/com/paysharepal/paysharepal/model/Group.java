@@ -3,29 +3,32 @@ package com.paysharepal.paysharepal.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "Users")
-@Table(name = "Users")
+@Entity(name = "Groups")
+@Table(name = "Groups")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class User {
-
+public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
-    private String email;
     @ElementCollection
-    @CollectionTable(name = "user_group_ids", joinColumns = @JoinColumn(name = "user_id"))
-    private List<UUID> groupIds;
+    @CollectionTable(name = "group_user_ids", joinColumns = @JoinColumn(name = "group_id"))
+    private List<UUID> userIds;
 
-    public User(String name, String email) {
+    public Group(String name) {
         this.name = name;
-        this.email = email;
+        this.userIds = new ArrayList<>();
     }
+
+    public boolean AddUser(UUID userId) {
+        return this.getUserIds().add(userId);
+}
 }

@@ -1,8 +1,10 @@
 package com.paysharepal.paysharepal.services;
 
-import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserDto;
+import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserContract;
+import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
 import com.paysharepal.paysharepal.model.User;
-import com.paysharepal.paysharepal.repositories.interfaces.IUserRepository;
+import com.paysharepal.paysharepal.repositories.IUserRepository;
+import com.paysharepal.paysharepal.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +13,28 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
+    private final IUserRepository userRepository;
     @Autowired
-    private IUserRepository userRepository;
-
-    public List<User> GetAll() {
-        return userRepository.findAll();
+    public UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public Optional<User> Get(UUID id) {
-        return userRepository.findById(id);
+    public List<UserDto> GetAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(
+                UserDto::of).toList();
     }
 
-    public User Add(UserDto u) {
-        User user = new User(u.name());
-        return userRepository.save(user);
+    public Optional<UserDto> Get(UUID id) {
+        Optional<User> user = userRepository.findById(id);
+
+        return user.map(UserDto::of);
+    }
+
+    public UserDto Add(UserContract u) {
+        User user = new User(u.name(), u.email());
+        userRepository.save(user);
+        return UserDto.of(user);
     }
 }

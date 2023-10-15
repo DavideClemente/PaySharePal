@@ -1,4 +1,4 @@
-package com.paysharepal.paysharepal.repositories.interfaces;
+package com.paysharepal.paysharepal.repositories;
 
 import com.paysharepal.paysharepal.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
