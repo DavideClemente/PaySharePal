@@ -4,22 +4,27 @@ import com.paysharepal.paysharepal.infrastructure.dto.contracts.GroupContract;
 import com.paysharepal.paysharepal.infrastructure.dto.contracts.GroupUserContract;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.GroupDto;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
+import com.paysharepal.paysharepal.infrastructure.exceptions.GroupNotExistsException;
 import com.paysharepal.paysharepal.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("Groups")
+@RequestMapping("api/v1/Groups")
 public class GroupController {
 
     private final GroupService groupService;
@@ -83,7 +88,24 @@ public class GroupController {
         }
     }
 
-    @GetMapping("{id}/Users")
+    @GetMapping("{groupId}/Image")
+    public ResponseEntity<?> GetImage(@PathVariable UUID groupId) {
+        try {
+            byte[] image = groupService.GetImage(groupId);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.IMAGE_PNG).body(image);
+        } catch (GroupNotExistsException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("{groupId}/Image")
+    public ResponseEntity<?> UploadImage(@PathVariable UUID groupId, @RequestParam("image") MultipartFile file) throws GroupNotExistsException, IOException {
+        GroupDto response = groupService.AddImage(groupId, file);
+
+        return ResponseEntity.ok(EntityModel.of(response));
+    }
+
+    @GetMapping("{groupId}/Users")
     public ResponseEntity<CollectionModel<EntityModel<UserDto>>> GetUsers() {
         throw new UnsupportedOperationException();
     }

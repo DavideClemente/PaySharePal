@@ -28,4 +28,8 @@ public class User {
         this.name = name;
         this.email = email;
     }
+
+    public boolean AddToGroup(UUID groupId) {
+        return getGroupIds().add(groupId);
+    }
 }

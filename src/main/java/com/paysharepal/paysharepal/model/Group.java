@@ -22,6 +22,8 @@ public class Group {
     @ElementCollection
     @CollectionTable(name = "group_user_ids", joinColumns = @JoinColumn(name = "group_id"))
     private List<UUID> userIds;
+    @Lob
+    private byte[] imageData;
 
     public Group(String name) {
         this.name = name;
@@ -30,5 +32,13 @@ public class Group {
 
     public boolean AddUser(UUID userId) {
         return this.getUserIds().add(userId);
-}
+    }
+
+    public int UserCount() {
+        return getUserIds().size();
+    }
+
+    public boolean HasUsers() {
+        return !getUserIds().isEmpty();
+    }
 }
