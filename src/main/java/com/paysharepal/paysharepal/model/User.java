@@ -20,13 +20,19 @@ public class User {
     private UUID id;
     private String name;
     private String email;
+
+    private String passwordHash;
+
+    @Lob
+    private byte[] profileImageData;
     @ElementCollection
     @CollectionTable(name = "user_group_ids", joinColumns = @JoinColumn(name = "user_id"))
     private List<UUID> groupIds;
 
-    public User(String name, String email) {
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
+        this.passwordHash = password;
     }
 
     public boolean AddToGroup(UUID groupId) {

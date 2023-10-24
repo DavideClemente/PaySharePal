@@ -2,6 +2,7 @@ package com.paysharepal.paysharepal.controllers;
 
 import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserContract;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
+import com.paysharepal.paysharepal.infrastructure.exceptions.UserNotExistsException;
 import com.paysharepal.paysharepal.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class UserController {
 
     private final IUserService userService;
+
     @Autowired
     public UserController(IUserService userService) {
         this.userService = userService;
@@ -46,15 +48,14 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<EntityModel<UserDto>> GetById(@PathVariable UUID id) {
-        Optional<UserDto> userResourceOptional = userService.Get(id);
-
-        if (userResourceOptional.isPresent()) {
-            UserDto userDto = userResourceOptional.get();
+        try {
+            UserDto userDto = userService.Get(id);
             userDto.AddSelfLink();
             userDto.AddAllUsersLink();
             return ResponseEntity.ok(EntityModel.of(userDto));
+        } catch (UserNotExistsException e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -67,5 +68,15 @@ public class UserController {
         URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash("users").slash(userDto.getId()).toUri();
 
         return ResponseEntity.created(uri).body(userDto);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<EntityModel<UserDto>> DeleteUser(@PathVariable UUID id) {
+        try {
+            UserDto userDto = userService.Delete(id);
+            return ResponseEntity.ok(EntityModel.of(userDto));
+        } catch (UserNotExistsException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

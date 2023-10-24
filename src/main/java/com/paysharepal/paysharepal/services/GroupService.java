@@ -50,6 +50,16 @@ public class GroupService implements IGroupService {
         return GroupDto.of(group);
     }
 
+    @Override
+    public GroupDto DeleteGroup(UUID groupId) throws GroupNotExistsException {
+        Optional<Group> groupOptional = groupRepository.findById(groupId);
+        if (groupOptional.isEmpty())
+            throw new GroupNotExistsException(String.format("There is no group with id %s", groupId));
+        Group group = groupOptional.get();
+        groupRepository.deleteById(groupId);
+        return GroupDto.of(group);
+    }
+
     public GroupDto AddImage(UUID groupId, MultipartFile file) throws GroupNotExistsException, IOException {
         Optional<Group> groupOptional = groupRepository.findById(groupId);
         if (groupOptional.isEmpty())

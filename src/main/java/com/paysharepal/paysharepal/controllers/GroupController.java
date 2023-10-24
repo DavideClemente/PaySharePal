@@ -74,6 +74,16 @@ public class GroupController {
         return ResponseEntity.created(uri).body(groupDto);
     }
 
+    @DeleteMapping("{groupId}")
+    public ResponseEntity<EntityModel<GroupDto>> Delete(@PathVariable UUID groupId) {
+        try {
+            GroupDto groupDto = groupService.DeleteGroup(groupId);
+            return ResponseEntity.ok(EntityModel.of(groupDto));
+        } catch (GroupNotExistsException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("{groupId}/Users")
     public ResponseEntity<EntityModel<GroupDto>> AddUser(@PathVariable UUID groupId, @RequestBody GroupUserContract user) {
         try {
