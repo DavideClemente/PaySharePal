@@ -1,6 +1,5 @@
 package com.paysharepal.paysharepal.controllers;
 
-import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserContract;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
 import com.paysharepal.paysharepal.infrastructure.exceptions.UserNotExistsException;
 import com.paysharepal.paysharepal.services.interfaces.IUserService;
@@ -12,13 +11,11 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/Users")
+@RequestMapping("api/v1/users")
 public class UserController {
 
     private final IUserService userService;
@@ -29,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> GetAll() {
-        List<UserDto> allUsers = userService.GetAll();
+    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> getAll() {
+        List<UserDto> allUsers = userService.getAll();
 
         List<EntityModel<UserDto>> userResources = allUsers.stream().map(
                 user -> {
@@ -47,9 +44,9 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EntityModel<UserDto>> GetById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<UserDto>> getById(@PathVariable UUID id) {
         try {
-            UserDto userDto = userService.Get(id);
+            UserDto userDto = userService.getById(id);
             userDto.AddSelfLink();
             userDto.AddAllUsersLink();
             return ResponseEntity.ok(EntityModel.of(userDto));
@@ -58,22 +55,22 @@ public class UserController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<EntityModel<UserDto>> Add(@RequestBody UserContract user) {
-        UserDto userDto = userService.Add(user);
-
-        userDto.AddSelfLink();
-        userDto.AddAllUsersLink();
-
-        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash("users").slash(userDto.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(userDto);
-    }
+//    @PostMapping
+//    public ResponseEntity<EntityModel<UserDto>> Add(@RequestBody UserContract user) {
+//        UserDto userDto = userService.Add(user);
+//
+//        userDto.AddSelfLink();
+//        userDto.AddAllUsersLink();
+//
+//        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash("users").slash(userDto.getId()).toUri();
+//
+//        return ResponseEntity.created(uri).body(userDto);
+//    }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<EntityModel<UserDto>> DeleteUser(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<UserDto>> deleteUser(@PathVariable UUID id) {
         try {
-            UserDto userDto = userService.Delete(id);
+            UserDto userDto = userService.delete(id);
             return ResponseEntity.ok(EntityModel.of(userDto));
         } catch (UserNotExistsException e) {
             return ResponseEntity.notFound().build();

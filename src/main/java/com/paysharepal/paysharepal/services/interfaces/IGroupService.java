@@ -12,13 +12,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IGroupService {
-    List<GroupDto> GetAll();
-    Optional<GroupDto> GetById(UUID id);
+    List<GroupDto> getAll();
+    Optional<GroupDto> getById(UUID id);
 
-    GroupDto AddGroup(GroupContract newGroup);
+    GroupDto addGroup(GroupContract newGroup);
 
-    GroupDto DeleteGroup(UUID groupId) throws GroupNotExistsException;
-    GroupDto AddImage(UUID groupId, MultipartFile file) throws GroupNotExistsException, IOException;
-    byte[] GetImage(UUID groupId) throws GroupNotExistsException;
-    GroupDto AddUserToGroup(UUID groupId, UUID userId) throws UserNotExistsException, GroupNotExistsException;
+    GroupDto deleteGroup(UUID groupId) throws GroupNotExistsException;
+    GroupDto addImage(UUID groupId, MultipartFile file) throws GroupNotExistsException, IOException;
+    byte[] getImage(UUID groupId) throws GroupNotExistsException;
+    GroupDto addUserToGroup(UUID groupId, UUID userId) throws UserNotExistsException, GroupNotExistsException;
 }

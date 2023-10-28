@@ -10,8 +10,4 @@ public class PaySharePalApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PaySharePalApplication.class, args);
 	}
-
-	@Bean public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 }

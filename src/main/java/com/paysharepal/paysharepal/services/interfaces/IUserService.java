@@ -3,16 +3,19 @@ package com.paysharepal.paysharepal.services.interfaces;
 import com.paysharepal.paysharepal.infrastructure.dto.contracts.UserContract;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
 import com.paysharepal.paysharepal.infrastructure.exceptions.UserNotExistsException;
+import com.paysharepal.paysharepal.model.User;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface IUserService {
-    List<UserDto> GetAll();
+    List<UserDto> getAll();
 
-    UserDto Get(UUID id) throws UserNotExistsException;
-    UserDto Add(UserContract userContract);
+    UserDto getById(UUID id) throws UserNotExistsException;
 
-    UserDto Delete(UUID userId) throws UserNotExistsException;
+    User getByEmail(String email);
+
+    UserDto add(UserContract userContract);
+
+    UserDto delete(UUID userId) throws UserNotExistsException;
 }

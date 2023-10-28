@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/Groups")
+@RequestMapping("api/v1/groups")
 public class GroupController {
 
     private final GroupService groupService;
@@ -34,8 +34,8 @@ public class GroupController {
     }
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<GroupDto>>> GetAll() {
-        List<GroupDto> allGroups = groupService.GetAll();
+    public ResponseEntity<CollectionModel<EntityModel<GroupDto>>> getAll() {
+        List<GroupDto> allGroups = groupService.getAll();
 
         List<EntityModel<GroupDto>> groupResources = allGroups.stream().map(
                 groupDto -> {
@@ -51,8 +51,8 @@ public class GroupController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EntityModel<GroupDto>> GetById(@PathVariable UUID id) {
-        Optional<GroupDto> groupDtoOptional = groupService.GetById(id);
+    public ResponseEntity<EntityModel<GroupDto>> getById(@PathVariable UUID id) {
+        Optional<GroupDto> groupDtoOptional = groupService.getById(id);
 
         if(groupDtoOptional.isPresent()) {
             GroupDto dto = groupDtoOptional.get();
@@ -64,8 +64,8 @@ public class GroupController {
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<GroupDto>> Add(@RequestBody GroupContract body) {
-        GroupDto groupDto = groupService.AddGroup(body);
+    public ResponseEntity<EntityModel<GroupDto>> add(@RequestBody GroupContract body) {
+        GroupDto groupDto = groupService.addGroup(body);
         groupDto.AddSelfLink();
         groupDto.AddAllGroupsLink();
 
@@ -75,19 +75,19 @@ public class GroupController {
     }
 
     @DeleteMapping("{groupId}")
-    public ResponseEntity<EntityModel<GroupDto>> Delete(@PathVariable UUID groupId) {
+    public ResponseEntity<EntityModel<GroupDto>> delete(@PathVariable UUID groupId) {
         try {
-            GroupDto groupDto = groupService.DeleteGroup(groupId);
+            GroupDto groupDto = groupService.deleteGroup(groupId);
             return ResponseEntity.ok(EntityModel.of(groupDto));
         } catch (GroupNotExistsException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping("{groupId}/Users")
-    public ResponseEntity<EntityModel<GroupDto>> AddUser(@PathVariable UUID groupId, @RequestBody GroupUserContract user) {
+    @PostMapping("{groupId}/users")
+    public ResponseEntity<EntityModel<GroupDto>> addUser(@PathVariable UUID groupId, @RequestBody GroupUserContract user) {
         try {
-            GroupDto groupDto = groupService.AddUserToGroup(groupId, user.userId());
+            GroupDto groupDto = groupService.addUserToGroup(groupId, user.userId());
             groupDto.AddSelfLink();
             groupDto.AddAllGroupsLink();
 
@@ -98,25 +98,25 @@ public class GroupController {
         }
     }
 
-    @GetMapping("{groupId}/Image")
-    public ResponseEntity<?> GetImage(@PathVariable UUID groupId) {
+    @GetMapping("{groupId}/image")
+    public ResponseEntity<?> getImage(@PathVariable UUID groupId) {
         try {
-            byte[] image = groupService.GetImage(groupId);
+            byte[] image = groupService.getImage(groupId);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.IMAGE_PNG).body(image);
         } catch (GroupNotExistsException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PostMapping("{groupId}/Image")
-    public ResponseEntity<?> UploadImage(@PathVariable UUID groupId, @RequestParam("image") MultipartFile file) throws GroupNotExistsException, IOException {
-        GroupDto response = groupService.AddImage(groupId, file);
+    @PostMapping("{groupId}/image")
+    public ResponseEntity<?> uploadImage(@PathVariable UUID groupId, @RequestParam("image") MultipartFile file) throws GroupNotExistsException, IOException {
+        GroupDto response = groupService.addImage(groupId, file);
 
         return ResponseEntity.ok(EntityModel.of(response));
     }
 
-    @GetMapping("{groupId}/Users")
-    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> GetUsers() {
+    @GetMapping("{groupId}/users")
+    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> getUsers(@PathVariable String groupId) {
         throw new UnsupportedOperationException();
     }
 }
