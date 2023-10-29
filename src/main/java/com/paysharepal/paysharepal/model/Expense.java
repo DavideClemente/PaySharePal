@@ -6,8 +6,8 @@ import lombok.*;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "Payments")
-@Table(name = "Payments")
+@Entity(name = "Expenses")
+@Table(name = "Expenses")
 @Getter
 @Setter
 @NoArgsConstructor
