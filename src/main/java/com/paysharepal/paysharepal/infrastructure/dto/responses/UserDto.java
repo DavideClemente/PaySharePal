@@ -20,11 +20,11 @@ public class UserDto extends EntityModel<UserDto> {
     private String email;
 
     public void AddSelfLink() {
-        add(Link.of("/users/"+getId()).withSelfRel());
+        add(Link.of("/api/v1/users/"+getId()).withSelfRel());
     }
 
     public void AddAllUsersLink() {
-        String usersLink = "/users";
+        String usersLink = "/api/v1/users";
         add(Link.of(usersLink, "all-users"));
     }
 
