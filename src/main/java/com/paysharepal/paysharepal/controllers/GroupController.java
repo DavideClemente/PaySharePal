@@ -6,6 +6,8 @@ import com.paysharepal.paysharepal.infrastructure.dto.responses.GroupDto;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
 import com.paysharepal.paysharepal.infrastructure.exceptions.GroupNotExistsException;
 import com.paysharepal.paysharepal.services.GroupService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -34,6 +36,7 @@ public class GroupController {
     }
 
     @GetMapping
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<EntityModel<GroupDto>>> getAll() {
         List<GroupDto> allGroups = groupService.getAll();
 
@@ -51,6 +54,7 @@ public class GroupController {
     }
 
     @GetMapping("{id}")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<GroupDto>> getById(@PathVariable UUID id) {
         Optional<GroupDto> groupDtoOptional = groupService.getById(id);
 
@@ -64,6 +68,7 @@ public class GroupController {
     }
 
     @PostMapping
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<GroupDto>> add(@RequestBody GroupContract body) {
         GroupDto groupDto = groupService.addGroup(body);
         groupDto.AddSelfLink();
@@ -75,6 +80,7 @@ public class GroupController {
     }
 
     @DeleteMapping("{groupId}")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<GroupDto>> delete(@PathVariable UUID groupId) {
         try {
             GroupDto groupDto = groupService.deleteGroup(groupId);
@@ -85,6 +91,7 @@ public class GroupController {
     }
 
     @PostMapping("{groupId}/users")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<GroupDto>> addUser(@PathVariable UUID groupId, @RequestBody GroupUserContract user) {
         try {
             GroupDto groupDto = groupService.addUserToGroup(groupId, user.userId());
@@ -99,6 +106,7 @@ public class GroupController {
     }
 
     @GetMapping("{groupId}/image")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> getImage(@PathVariable UUID groupId) {
         try {
             byte[] image = groupService.getImage(groupId);
@@ -109,6 +117,7 @@ public class GroupController {
     }
 
     @PostMapping("{groupId}/image")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> uploadImage(@PathVariable UUID groupId, @RequestParam("image") MultipartFile file) throws GroupNotExistsException, IOException {
         GroupDto response = groupService.addImage(groupId, file);
 
@@ -116,6 +125,7 @@ public class GroupController {
     }
 
     @GetMapping("{groupId}/users")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<EntityModel<UserDto>>> getUsers(@PathVariable String groupId) {
         throw new UnsupportedOperationException();
     }

@@ -3,6 +3,8 @@ package com.paysharepal.paysharepal.controllers;
 import com.paysharepal.paysharepal.infrastructure.dto.responses.UserDto;
 import com.paysharepal.paysharepal.infrastructure.exceptions.UserNotExistsException;
 import com.paysharepal.paysharepal.services.interfaces.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -26,6 +28,7 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<EntityModel<UserDto>>> getAll() {
         List<UserDto> allUsers = userService.getAll();
 
@@ -44,6 +47,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<UserDto>> getById(@PathVariable UUID id) {
         try {
             UserDto userDto = userService.getById(id);
@@ -68,6 +72,7 @@ public class UserController {
 //    }
 
     @DeleteMapping("{id}")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<EntityModel<UserDto>> deleteUser(@PathVariable UUID id) {
         try {
             UserDto userDto = userService.delete(id);
